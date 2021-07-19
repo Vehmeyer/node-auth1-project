@@ -33,7 +33,14 @@ const { route } = require('../users/users-router')
  */
 
 router.post('/register', md.checkPasswordLength, md.checkUsernameFree, (req, res, next) => {
-  console.log("POST register connected")
+  const { username, password } = req.body
+  const hash = bcrypt.hashSync(password, 8)
+  
+  User.add({ username, hash })
+    .then(saved => {
+      res.status(201).json(saved)
+    })
+    .catch(next)
 })
 
 /**
@@ -52,7 +59,13 @@ router.post('/register', md.checkPasswordLength, md.checkUsernameFree, (req, res
   }
  */
   router.post('/login', md.checkUsernameExists, (req, res, next) => {
-    console.log("POST login connected")
+    const { password } = req.body
+    if (bcrypt.compareSync(password, req.user.password)) {
+      req.session.user = req.user
+      res.json({ message: `Welcome ${req.user.username}`})
+    } else {
+      next({ status: 401, message: 'Invalid credentials'})
+    }
   })
   
 
