@@ -36,7 +36,7 @@ router.post('/register', md.checkPasswordLength, md.checkUsernameFree, (req, res
   const { username, password } = req.body
   const hash = bcrypt.hashSync(password, 8)
   
-  User.add({ username, hash })
+  User.add({ username, password: hash })
     .then(saved => {
       res.status(200).json(saved)
     })
