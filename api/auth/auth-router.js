@@ -32,7 +32,7 @@ const { route } = require('../users/users-router')
   }
  */
 
-router.post('/register', (req, res, next) => {
+router.post('/register', md.checkPasswordLength, md.checkUsernameFree, (req, res, next) => {
   console.log("POST register connected")
 })
 
@@ -51,7 +51,7 @@ router.post('/register', (req, res, next) => {
     "message": "Invalid credentials"
   }
  */
-  router.post('/login', (req, res, next) => {
+  router.post('/login', md.checkUsernameExists, (req, res, next) => {
     console.log("POST login connected")
   })
   
@@ -76,4 +76,4 @@ router.get('/logout', (req, res, next) => {
 })
  
 // Don't forget to add the router to the `exports` object so it can be required in other modules
-module.exports = router;
+module.exports = router; 
