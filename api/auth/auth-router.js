@@ -38,7 +38,7 @@ router.post('/register', md.checkPasswordLength, md.checkUsernameFree, (req, res
   
   User.add({ username, hash })
     .then(saved => {
-      res.status(201).json(saved)
+      res.status(200).json(saved)
     })
     .catch(next)
 })
@@ -62,7 +62,7 @@ router.post('/register', md.checkPasswordLength, md.checkUsernameFree, (req, res
     const { password } = req.body
     if (bcrypt.compareSync(password, req.user.password)) {
       req.session.user = req.user
-      res.json({ message: `Welcome ${req.user.username}`})
+      res.json({ status: 200, message: `Welcome ${req.user.username}!`})
     } else {
       next({ status: 401, message: 'Invalid credentials'})
     }
@@ -85,7 +85,17 @@ router.post('/register', md.checkPasswordLength, md.checkUsernameFree, (req, res
   }
  */
 router.get('/logout', (req, res, next) => {
-  console.log("GET auth connected")
+  if (req.session.user) {
+    req.session.destroy(err => {
+      if (err) {
+        next(err)
+      } else {
+        res.json({ status: 200, message: 'logged out'})
+      }
+    })
+  } else {
+    res.json({ status: 200, message: 'no session' })
+  }
 })
  
 // Don't forget to add the router to the `exports` object so it can be required in other modules
